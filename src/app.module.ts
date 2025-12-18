@@ -4,6 +4,9 @@ import { AppService } from './app.service';
 import { ChatsModule } from './chats/chats.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ChatsController } from './chats/chats.controller';
+import { ChatsService } from './chats/chats.service';
+import 'dotenv/config';
 
 @Module({
   imports: [
@@ -11,7 +14,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     MongooseModule.forRoot(process.env.MONGODB_CONNECTION_URI!),
     ChatsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, ChatsController],
+  providers: [AppService, ChatsService],
 })
 export class AppModule {}
