@@ -11,6 +11,7 @@ export class WeatherApiClient {
   ) {}
 
   async fetchWeather(city: string) {
+    //nestjs's way to call external api (like fetch or axios)
     const response = await lastValueFrom(
       this.httpService.get('https://api.openweathermap.org/data/2.5/weather', {
         params: {
