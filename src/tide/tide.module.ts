@@ -4,6 +4,8 @@ import { TideController } from './tide.controller';
 import { TideApiClient } from './clients/tide-api.client';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Tide, TideSchema } from './schemas/tide.schema';
 
 @Module({
   imports: [
@@ -12,6 +14,7 @@ import { ConfigModule } from '@nestjs/config';
       maxRedirects: 5,
     }),
     ConfigModule,
+    MongooseModule.forFeature([{ name: Tide.name, schema: TideSchema }]),
   ],
   providers: [TideService, TideApiClient],
   controllers: [TideController],
