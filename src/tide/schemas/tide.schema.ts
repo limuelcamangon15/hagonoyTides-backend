@@ -1,0 +1,56 @@
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+
+export type TideDocument = Tide & Document;
+
+@Schema({ _id: false })
+class EntryTide {
+  @Prop({ required: true })
+  tideLevel: number;
+
+  @Prop({ required: true })
+  time: string;
+}
+
+@Schema({ _id: false })
+class DailyTide {
+  @Prop({ required: true })
+  isoDate: string;
+
+  @Prop({ required: true })
+  date: number;
+
+  @Prop({ required: true })
+  day: number;
+
+  @Prop({ type: [EntryTide], required: true })
+  tide: EntryTide[];
+}
+
+@Schema({ _id: false })
+class MonthlyTide {
+  @Prop({ required: true })
+  month: string;
+
+  @Prop({ type: [DailyTide], required: true })
+  dailyTide: DailyTide[];
+}
+
+export class Tide {
+  @Prop({ required: true })
+  municipality: string;
+
+  @Prop({ required: true })
+  province: string;
+
+  @Prop({ required: true })
+  region: number;
+
+  @Prop({ required: true })
+  year: number;
+
+  @Prop({ type: [MonthlyTide], required: true })
+  monthlyTide: MonthlyTide[];
+}
+
+export const TideSchema = SchemaFactory.createForClass(Tide);
