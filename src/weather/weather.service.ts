@@ -5,7 +5,7 @@ import { WeatherApiClient } from './clients/weather-api.client';
 export class WeatherService {
   constructor(private readonly weatherApiClient: WeatherApiClient) {}
 
-  async getWeatherByCity(city: string) {
+  async getWeatherByCity(city: string): Promise<any> {
     return this.weatherApiClient.fetchWeather(city);
   }
 }

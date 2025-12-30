@@ -16,7 +16,7 @@ export class WeatherApiClient {
       this.httpService.get('https://api.openweathermap.org/data/2.5/weather', {
         params: {
           q: city,
-          appid: this.configService.get('OPENWEATHERMAP_API_KEY'),
+          appid: this.configService.get<string>('OPENWEATHERMAP_API_KEY'),
           units: 'metric',
         },
       }),
