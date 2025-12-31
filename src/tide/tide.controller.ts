@@ -7,6 +7,6 @@ export class TideController {
 
   @Get()
   getSevenDaysTides(@Query('startDate') startDate: string) {
-    return this.tideService.getSevenDaysTides(startDate);
+    return this.tideService.fetchAndStoreSevenDays(startDate);
   }
 }

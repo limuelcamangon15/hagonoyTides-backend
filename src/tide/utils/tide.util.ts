@@ -1,6 +1,7 @@
 export function adjustTideLevel(tideType: string, tideLevel: number): number {
   const HIGH_TIDE_OFFSET = 0.51;
   const LOW_TIDE_OFFSET = 0.52;
+  const METERS_EQUIV_TO_ONE_FOOT = 3.28084;
 
   let offset = 0;
 
@@ -10,7 +11,8 @@ export function adjustTideLevel(tideType: string, tideLevel: number): number {
     offset = LOW_TIDE_OFFSET;
   }
 
-  const adjustedTideLevel = tideLevel + offset;
+  //convert meters into feet
+  const adjustedTideLevel = (tideLevel + offset) * METERS_EQUIV_TO_ONE_FOOT;
 
   return adjustedTideLevel;
 }

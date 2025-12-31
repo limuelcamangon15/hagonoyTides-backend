@@ -10,6 +10,9 @@ class EntryTide {
 
   @Prop({ required: true })
   time: string;
+
+  @Prop()
+  type: string;
 }
 
 @Schema({ _id: false })
@@ -21,10 +24,10 @@ class DailyTide {
   date: number;
 
   @Prop({ required: true })
-  day: number;
+  day: string;
 
-  @Prop({ type: [EntryTide], required: true })
-  tide: EntryTide[];
+  @Prop({ type: [EntryTide], default: [] })
+  tides: EntryTide[];
 }
 
 @Schema({ _id: false })
@@ -32,10 +35,11 @@ class MonthlyTide {
   @Prop({ required: true })
   month: string;
 
-  @Prop({ type: [DailyTide], required: true })
-  dailyTide: DailyTide[];
+  @Prop({ type: [DailyTide], default: [] })
+  dailyTides: DailyTide[];
 }
 
+@Schema()
 export class Tide {
   @Prop({ required: true })
   municipality: string;
@@ -49,8 +53,8 @@ export class Tide {
   @Prop({ required: true })
   year: number;
 
-  @Prop({ type: [MonthlyTide], required: true })
-  monthlyTide: MonthlyTide[];
+  @Prop({ type: [MonthlyTide], default: [] })
+  monthlyTides: MonthlyTide[];
 }
 
 export const TideSchema = SchemaFactory.createForClass(Tide);
