@@ -9,4 +9,9 @@ export class TideController {
   getSevenDaysTides(@Query('startDate') startDate: string) {
     return this.tideService.fetchAndStoreSevenDays(startDate);
   }
+
+  @Get('get/byYear')
+  getTidesByYear(@Query('year') year: number) {
+    return this.tideService.getTidesByYear(year);
+  }
 }

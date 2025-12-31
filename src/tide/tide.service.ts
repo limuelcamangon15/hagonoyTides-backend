@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { TideApiClient } from './clients/tide-api.client';
-import { adjustTideLevel } from './utils/tide.util';
+import { adjustTideLevel, generateDates } from './utils/tide.util';
 import { Tide, TideDocument } from './schemas/tide.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -13,12 +13,17 @@ export class TideService {
     private readonly tideModel: Model<TideDocument>,
   ) {}
 
+  async getTidesByYear(year: number) {
+    return this.tideModel.findOne({ year: year });
+  }
+
   async fetchAndStoreSevenDays(startDate: string) {
-    const apiResponse = await this.tideApiClient.fetchTide(startDate);
-
-    const monthlyData = this.transformToMonthly(apiResponse.extremes);
-
+    const weeklyDates: string[] = generateDates(startDate);
     const year = new Date(startDate).getFullYear();
+
+    const apiResponses = await Promise.all(
+      weeklyDates.map((wd) => this.tideApiClient.fetchTide(wd)),
+    );
 
     await this.tideModel.updateOne(
       { municipality: 'Hagonoy', province: 'Bulacan', year },
@@ -34,44 +39,48 @@ export class TideService {
       { upsert: true },
     );
 
-    for (const monthData of monthlyData) {
-      await this.tideModel.updateOne(
-        {
-          municipality: 'Hagonoy',
-          province: 'Bulacan',
-          year,
-          'monthlyTides.month': { $ne: monthData.month },
-        },
-        {
-          $push: {
-            monthlyTides: {
-              month: monthData.month,
-              dailyTides: [],
-            },
-          },
-        },
-      );
+    for (const apiResponse of apiResponses) {
+      const monthlyData = this.transformToMonthly(apiResponse.extremes);
 
-      await this.tideModel.updateOne(
-        {
-          municipality: 'Hagonoy',
-          province: 'Bulacan',
-          year,
-        },
-        {
-          $push: {
-            'monthlyTides.$[m].dailyTides': {
-              $each: monthData.dailyTides,
+      for (const monthData of monthlyData) {
+        await this.tideModel.updateOne(
+          {
+            municipality: 'Hagonoy',
+            province: 'Bulacan',
+            year,
+            'monthlyTides.month': { $ne: monthData.month },
+          },
+          {
+            $push: {
+              monthlyTides: {
+                month: monthData.month,
+                dailyTides: [],
+              },
             },
           },
-        },
-        {
-          arrayFilters: [{ 'm.month': monthData.month }],
-        },
-      );
+        );
+
+        await this.tideModel.updateOne(
+          {
+            municipality: 'Hagonoy',
+            province: 'Bulacan',
+            year,
+          },
+          {
+            $push: {
+              'monthlyTides.$[m].dailyTides': {
+                $each: monthData.dailyTides,
+              },
+            },
+          },
+          {
+            arrayFilters: [{ 'm.month': monthData.month }],
+          },
+        );
+      }
     }
 
-    return { status: 200, message: 'okay nasave na', data: apiResponse };
+    return { status: 200, message: 'okay nasave na' };
   }
 
   private transformToMonthly(extremes: any[]) {

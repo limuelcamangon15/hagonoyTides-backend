@@ -16,3 +16,18 @@ export function adjustTideLevel(tideType: string, tideLevel: number): number {
 
   return adjustedTideLevel;
 }
+
+export function generateDates(startDate: string): string[] {
+  const dates: string[] = [];
+
+  const start = new Date(startDate);
+  const year = start.getFullYear();
+
+  const current = new Date(start);
+
+  while (current.getFullYear() === year) {
+    dates.push(current.toISOString().split('T')[0]);
+    current.setDate(current.getDate() + 7);
+  }
+  return dates;
+}
