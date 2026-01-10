@@ -10,7 +10,11 @@ import { CreateMessageDto } from './dto/create.message.dto';
 
 @WebSocketGateway({
   cors: {
-    origin: ['http://localhost:5173', 'https://hagonoy-tides.vercel.app'],
+    origin: [
+      'http://localhost:5173',
+      'https://hagonoy-tides.vercel.app',
+      'https://hagonoytides.vercel.app',
+    ],
     credentials: true,
   },
 })
